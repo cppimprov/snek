@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (MSVC)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Deploy/${input:projectName}/MSVC/${input:buildType}/${input:projectName}.exe",
+            "args": [ "${input:commandLineArgs}" ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Deploy/${input:projectName}/MSVC/${input:buildType}/",
+            "environment": [],
+            "externalConsole": true,
+        }
+    ],
+    "inputs": [
+        {
+            "id": "projectName",
+            "description": "Project to Launch:",
+            "type": "pickString",
+            "options": [
+                "Snek",
+            ]
+        },
+        {
+            "id": "buildType",
+            "description": "Build Type:",
+            "type": "pickString",
+            "options": [
+                "Debug", "Release", "Master"
+            ]
+        },
+        {
+            "id": "commandLineArgs",
+            "description": "Command Line Arguments:",
+            "type": "promptString",
+            "default": "",
+        },
+    ]
+}
