@@ -3,7 +3,6 @@
 #include "snek_sdl_object_handle.hpp"
 
 #include <glm/glm.hpp>
-
 #include <SDL.h>
 
 #include <string>
