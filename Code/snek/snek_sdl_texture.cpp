@@ -2,6 +2,8 @@
 
 #include "snek_die.hpp"
 #include "snek_log.hpp"
+#include "snek_sdl_renderer.hpp"
+#include "snek_sdl_surface.hpp"
 
 namespace snek
 {
@@ -9,9 +11,9 @@ namespace snek
 	namespace sdl
 	{
 		
-		texture::texture(SDL_Renderer* renderer, SDL_Surface* surface)
+		texture::texture(renderer const& renderer, surface const& surface)
 		{
-			auto handle = SDL_CreateTextureFromSurface(renderer, surface);
+			auto handle = SDL_CreateTextureFromSurface(renderer.get_handle(), surface.get_handle());
 
 			if (!handle)
 			{
@@ -27,7 +29,7 @@ namespace snek
 			die_if(!is_valid());
 
 			auto size = glm::i32vec2();
-			if (SDL_QueryTexture(get(), nullptr, nullptr, &size.x, &size.y) != 0)
+			if (SDL_QueryTexture(get_handle(), nullptr, nullptr, &size.x, &size.y) != 0)
 			{
 				log_error("SDL_QueryTexture() failed: " + std::string(SDL_GetError()));
 				die();
@@ -40,7 +42,7 @@ namespace snek
 		{
 			die_if(!is_valid());
 
-			SDL_SetTextureBlendMode(get(), get_sdl_blendmode(mode));
+			SDL_SetTextureBlendMode(get_handle(), get_sdl_blendmode(mode));
 		}
 		
 	} // sdl

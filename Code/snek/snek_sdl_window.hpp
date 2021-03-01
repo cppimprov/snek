@@ -14,7 +14,7 @@ namespace snek
 	{
 		
 		
-		class window
+		class window : public object_handle<SDL_Window>
 		{
 		public:
 
@@ -23,24 +23,11 @@ namespace snek
 			window() = default;
 			explicit window(glm::i32vec2 size, std::string const& title, display_mode mode);
 
-			window(window const&) = delete;
-			window& operator=(window const&) = delete;
-
-			window(window&&) = default;
-			window& operator=(window&&) = default;
-
 			glm::i32vec2 get_size() const;
-
-			bool is_open() const;
-			void close();
-
-			SDL_Window* get_handle() const;
 
 		private:
 
 			static Uint32 get_sdl_window_flags(display_mode mode);
-
-			object_handle<SDL_Window> m_handle;
 		};
 		
 	} // sdl

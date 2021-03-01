@@ -23,34 +23,16 @@ namespace snek
 				die();
 			}
 
-			m_handle.reset(handle, [] (SDL_Window* w) { SDL_DestroyWindow(w); });
+			reset(handle, [] (SDL_Window* w) { SDL_DestroyWindow(w); });
 		}
 
 		glm::i32vec2 window::get_size() const
 		{
-			die_if(!is_open());
+			die_if(!is_valid());
 
 			auto size = glm::i32vec2();
-			SDL_GetWindowSize(m_handle.get(), &size.x, &size.y);
+			SDL_GetWindowSize(get_handle(), &size.x, &size.y);
 			return size;
-		}
-
-		bool window::is_open() const
-		{
-			return m_handle.is_valid();
-		}
-
-		void window::close()
-		{
-			if (!is_open())
-				return;
-			
-			m_handle.reset();
-		}
-
-		SDL_Window* window::get_handle() const
-		{
-			return m_handle.get();
 		}
 
 		Uint32 window::get_sdl_window_flags(display_mode mode)

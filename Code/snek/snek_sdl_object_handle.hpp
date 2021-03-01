@@ -15,7 +15,6 @@ namespace snek
 		public:
 
 			object_handle();
-			object_handle(T* object, Deleter deleter);
 
 			object_handle(object_handle const&) = delete;
 			object_handle& operator=(object_handle const&) = delete;
@@ -26,9 +25,14 @@ namespace snek
 			~object_handle();
 
 			bool is_valid() const;
-			T* get() const;
+			void destroy();
 
-			void reset();
+			T* get_handle() const;
+
+		protected:
+
+			object_handle(T* object, Deleter deleter);
+
 			void reset(T* object, Deleter deleter);
 
 		private:
@@ -53,7 +57,7 @@ namespace snek
 			object_handle()
 		{
 			reset(other.m_handle, std::move(other.m_deleter));
-			other.reset();
+			other.destroy();
 		}
 
 		template<class T, class D>
@@ -71,7 +75,7 @@ namespace snek
 		template<class T, class D>
 		object_handle<T, D>::~object_handle()
 		{
-			reset();
+			destroy();
 		}
 
 		template<class T, class D>
@@ -81,13 +85,13 @@ namespace snek
 		}
 
 		template<class T, class D>
-		T* object_handle<T, D>::get() const
+		T* object_handle<T, D>::get_handle() const
 		{
 			return m_handle;
 		}
 
 		template<class T, class D>
-		void object_handle<T, D>::reset()
+		void object_handle<T, D>::destroy()
 		{
 			if (m_deleter)
 				m_deleter(m_handle);
@@ -99,7 +103,7 @@ namespace snek
 		template<class T, class D>
 		void object_handle<T, D>::reset(T* object, D deleter)
 		{
-			reset();
+			destroy();
 
 			m_handle = object;
 			m_deleter = std::move(deleter);

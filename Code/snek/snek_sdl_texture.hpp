@@ -11,12 +11,16 @@ namespace snek
 	
 	namespace sdl
 	{
+
+		class renderer;
+		class surface;
 		
 		class texture : public object_handle<SDL_Texture>
 		{
 		public:
 
-			explicit texture(SDL_Renderer* renderer, SDL_Surface* surface);
+			texture() = default;
+			explicit texture(renderer const& renderer, surface const& surface);
 
 			glm::i32vec2 get_size() const;
 

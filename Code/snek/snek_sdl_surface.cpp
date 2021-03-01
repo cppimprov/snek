@@ -12,7 +12,7 @@ namespace snek
 		surface::surface(SDL_Surface* surface)
 		{
 			if (surface)
-				m_handle.reset(surface, [] (SDL_Surface* s) { SDL_FreeSurface(s); });
+				reset(surface, [] (SDL_Surface* s) { SDL_FreeSurface(s); });
 		}
 
 		surface::surface(glm::i32vec2 size)
@@ -25,7 +25,7 @@ namespace snek
 				die();
 			}
 
-			m_handle.reset(handle, [] (SDL_Surface* s) { SDL_FreeSurface(s); });
+			reset(handle, [] (SDL_Surface* s) { SDL_FreeSurface(s); });
 		}
 
 		glm::i32vec2 surface::get_size() const
@@ -39,25 +39,10 @@ namespace snek
 		{
 			die_if(!is_valid());
 
-			SDL_SetSurfaceBlendMode(m_handle.get(), get_sdl_blendmode(mode));
+			SDL_SetSurfaceBlendMode(get_handle(), get_sdl_blendmode(mode));
 		}
 
-		bool surface::is_valid() const
-		{
-			return m_handle.is_valid();
-		}
 
-		void surface::destroy()
-		{
-			m_handle.reset();
-		}
-
-		SDL_Surface* surface::get_handle() const
-		{
-			return m_handle.get();
-		}
-		
-		
 		void blit_surface(surface const& src, glm::i32vec2 src_pos, glm::i32vec2 src_size, surface const& dst, glm::i32vec2 dst_pos, glm::i32vec2 dst_size)
 		{
 			die_if(!src.is_valid());

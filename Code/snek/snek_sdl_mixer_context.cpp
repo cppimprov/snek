@@ -2,6 +2,7 @@
 
 #include "snek_die.hpp"
 #include "snek_log.hpp"
+#include "snek_sdl_mixer_chunk.hpp"
 
 #include <SDL_mixer.h>
 
@@ -33,6 +34,17 @@ namespace snek
 		{
 			Mix_CloseAudio();
 			Mix_Quit();
+		}
+		
+		void mixer_context::play_once(mixer_chunk const& chunk) const
+		{
+			die_if(!chunk.is_valid());
+
+			if (Mix_PlayChannel(-1, chunk.get_handle(), 0) == -1)
+			{
+				log_error("Mix_PlayChannel() failed: " + std::string(Mix_GetError()));
+				// non-fatal error... for now!
+			}
 		}
 		
 	} // sdl

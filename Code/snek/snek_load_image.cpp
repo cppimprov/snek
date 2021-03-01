@@ -11,8 +11,6 @@ namespace snek
 	
 	sdl::surface load_sdl_surface_from_file_rgba(std::string const& file)
 	{
-		stbi_set_flip_vertically_on_load(true);
-
 		int width, height, channels;
 		auto pixels = stbi_load(file.c_str(), &width, &height, &channels, 0);
 
