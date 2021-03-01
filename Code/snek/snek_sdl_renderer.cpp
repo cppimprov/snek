@@ -2,6 +2,7 @@
 
 #include "snek_die.hpp"
 #include "snek_log.hpp"
+#include "snek_sdl_texture.hpp"
 
 #include <string>
 
@@ -54,6 +55,16 @@ namespace snek
 			SDL_RenderDrawRect(m_handle.get(), &rect);
 		}
 		
+		void renderer::draw_quad_texture(glm::i32vec2 dst_pos, glm::i32vec2 dst_size, texture const& src, glm::i32vec2 src_pos, glm::i32vec2 src_size)
+		{
+			die_if(!is_valid());
+			die_if(!src.is_valid());
+
+			auto const src_rect = SDL_Rect{ src_pos.x, src_pos.y, src_size.x, src_size.y };
+			auto const dst_rect = SDL_Rect{ dst_pos.x, dst_pos.y, dst_size.x, dst_size.y };
+			SDL_RenderCopy(m_handle.get(), src.get(), &src_rect, &dst_rect);
+		}
+		
 		void renderer::present() const
 		{
 			die_if(!is_valid());
@@ -73,16 +84,10 @@ namespace snek
 			
 			m_handle.reset();
 		}
-		
-		SDL_BlendMode renderer::get_sdl_blendmode(blend_mode mode)
-		{
-			if (mode == blend_mode::NONE) return SDL_BLENDMODE_NONE;
-			if (mode == blend_mode::BLEND) return SDL_BLENDMODE_BLEND;
-			if (mode == blend_mode::ADDITIVE) return SDL_BLENDMODE_ADD;
-			if (mode == blend_mode::MODULATE) return SDL_BLENDMODE_MOD;
 
-			die();
-			return SDL_BLENDMODE_NONE;
+		SDL_Renderer* renderer::get_handle() const
+		{
+			return m_handle.get();
 		}
 
 	} // sdl

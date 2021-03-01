@@ -213,7 +213,7 @@ class PlatformMSVC:
 		self.write_rules(n)
 
 		stb = ProjectStaticLib.from_name('stbimage', self, build_type)
-		stb.defines = [ 'STBIW_WINDOWS_UTF8' ]
+		stb.defines = [ 'STBI_WINDOWS_UTF8' ]
 		self.write_static_lib(n, build_type, stb, '0')
 
 		glm = ProjectStaticLib.from_name('glm', self, build_type)

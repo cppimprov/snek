@@ -21,7 +21,7 @@ namespace snek
 			enum class display_mode { WINDOWED, FULLSCREEN, FULLSCREEN_EXCLUSIVE };
 
 			window() = default;
-			window(glm::i32vec2 size, std::string const& title, display_mode mode);
+			explicit window(glm::i32vec2 size, std::string const& title, display_mode mode);
 
 			window(window const&) = delete;
 			window& operator=(window const&) = delete;
