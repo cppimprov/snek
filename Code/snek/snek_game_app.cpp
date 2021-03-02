@@ -12,7 +12,7 @@ namespace snek
 			m_mixer_context(),
 			m_window({ 480, 480 }, "snek!", sdl::window::display_mode::WINDOWED),
 			m_renderer(m_window),
-			m_assets(game::load_assets(m_renderer, { "1", "2", "3", "score" }, { "count", "start", "step", "eat", "die" }))
+			m_assets(game::load_assets(m_renderer, { "1", "2", "3", "score" }, { "count", "start", "step", "grow", "eat", "die", "win" }))
 		{
 
 		}
