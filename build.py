@@ -101,7 +101,8 @@ class PlatformMSVC:
 	def write_rules(self, n):
 		n.rule('cc', 'cl.exe -c $cc_flags $cc_build_flags $cc_warning_level $cc_defines $cc_out_obj $cc_out_pdb $cc_in_includes $cc_in_files')
 		n.rule('ar', 'lib.exe $ar_flags $ar_out_file $ar_in_files')
-		n.rule('link', 'link.exe $link_flags $link_build_flags $link_out_exe $link_out_pdb $link_in_lib_dirs $link_in_files')
+		n.rule('rc', 'rc.exe $out_file $in_file')
+		n.rule('link', 'link.exe $link_flags $link_build_flags $link_out_exe $link_out_pdb $link_in_lib_dirs $link_in_files $res_file')
 
 	def get_cc_flags(self):
 		return '/nologo /Gy /EHsc /WX /std:c++17 /Zc:__cplusplus /utf-8'
@@ -154,9 +155,24 @@ class PlatformMSVC:
 				('ar_out_file', self.get_ar_out_file(out_lib)),
 				('ar_in_files', ' '.join(in_objs))
 			])
+	
+	def get_rc_out_file(self, file):
+		return '/fo ' + file
+	
+	def get_rc_in_file(self, file):
+		return file
+
+	def write_rc_call(self, n, build_type, in_file, out_file):
+		in_deps = [in_file]
+		out_deps = [out_file]
+		n.build(out_deps, 'rc', in_deps,
+			variables = [
+				('out_file', self.get_rc_out_file(out_file)),
+				('in_file', self.get_rc_in_file(in_file)),
+			])
 
 	def get_link_flags(self):
-		return '/NOLOGO /OPT:REF /SUBSYSTEM:CONSOLE'
+		return '/NOLOGO /OPT:REF /SUBSYSTEM:WINDOWS'
 
 	def get_link_build_flags(self, build_type):
 		return { BuildType.debug: '/DEBUG:FULL', BuildType.release: '/DEBUG:FULL', BuildType.master: '/DEBUG:NONE' }[build_type]
@@ -170,8 +186,8 @@ class PlatformMSVC:
 	def get_link_in_lib_dirs(self, paths):
 		return ' '.join('/LIBPATH:' + p for p in paths)
 
-	def write_link_build(self, n, build_type, in_objs, in_standard_libs, in_libs, in_lib_dirs, out_exe, out_pdb):
-		in_deps = in_objs + in_libs
+	def write_link_build(self, n, build_type, in_objs, in_standard_libs, in_libs, in_lib_dirs, out_exe, out_pdb, res_file):
+		in_deps = in_objs + in_libs + [res_file]
 		out_deps = [out_exe, out_pdb]
 		n.build(out_deps, 'link', in_deps,
 			variables = [
@@ -180,7 +196,8 @@ class PlatformMSVC:
 				('link_out_exe', self.get_link_out_exe(out_exe)),
 				('link_out_pdb', self.get_link_out_pdb(out_pdb)),
 				('link_in_lib_dirs', self.get_link_in_lib_dirs(in_lib_dirs)),
-				('link_in_files', ' '.join(in_objs + in_libs + in_standard_libs))
+				('link_in_files', ' '.join(in_objs + in_libs + in_standard_libs)),
+				('res_file', res_file),
 			])
 			
 	def write_static_lib(self, n, build_type, lib, warning_level = '4'):
@@ -195,7 +212,7 @@ class PlatformMSVC:
 		lib_path = join_file(lib.deploy_dir, lib.project_name + '.lib')
 		self.write_ar_build(n, obj_paths, lib_path)
 
-	def write_exe(self, n, build_type, exe, warning_level = '4'):
+	def write_exe(self, n, build_type, exe, warning_level = '4', res_file = ''):
 		src_paths = exe.src_files
 		inc_paths = exe.inc_dirs
 		obj_paths = [join_file(exe.build_dir, get_file_stem(f)) + '.obj' for f in exe.src_files]
@@ -206,7 +223,7 @@ class PlatformMSVC:
 
 		exe_path = join_file(exe.deploy_dir, exe.project_name + '.exe')
 		pdb_final_path = join_file(exe.deploy_dir, exe.project_name + '.pdb')
-		self.write_link_build(n, build_type, obj_paths, exe.standard_libs, exe.libs, exe.lib_dirs, exe_path, pdb_final_path)
+		self.write_link_build(n, build_type, obj_paths, exe.standard_libs, exe.libs, exe.lib_dirs, exe_path, pdb_final_path, res_file)
 		
 	def write(self, n, build_type):
 
@@ -395,6 +412,11 @@ class PlatformMSVC:
 		]
 		self.write_static_lib(n, build_type, sdlmixer, '3')
 
+		rc_file = join_file(get_code_dir('snek'), 'snek.rc')
+		res_deploy_dir = get_deploy_dir('res', self.get_platform_name(), build_type)
+		res_file = join_file(res_deploy_dir, 'snek.res')
+		self.write_rc_call(n, build_type, rc_file, res_file)
+
 		snek = ProjectExe.from_name('snek', self, build_type)
 		snek.defines = stb.defines + glm.defines + sdl.defines + [ 'MUSIC_WAV' ]
 		snek.inc_dirs = [
@@ -410,7 +432,7 @@ class PlatformMSVC:
 			join_file(sdlmixer.deploy_dir, self.get_lib_name(sdlmixer.project_name)),
 		]
 		snek.standard_libs = [ 'User32.lib', 'Shell32.lib', 'Ole32.lib', 'OpenGL32.lib', 'gdi32.lib', 'Winmm.lib', 'Advapi32.lib', 'Version.lib', 'Imm32.lib', 'Setupapi.lib', 'OleAut32.lib' ]
-		self.write_exe(n, build_type, snek)
+		self.write_exe(n, build_type, snek, '4', res_file)
 
 class PlatformGCC:
 

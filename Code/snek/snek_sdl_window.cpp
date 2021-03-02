@@ -13,7 +13,7 @@ namespace snek
 		{
 			auto handle = SDL_CreateWindow(
 				title.c_str(),
-				SDL_WINDOWPOS_CENTERED_DISPLAY(1), SDL_WINDOWPOS_CENTERED_DISPLAY(1),
+				SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 				size.x, size.y,
 				get_sdl_window_flags(mode));
 			
