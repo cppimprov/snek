@@ -1,0 +1,6 @@
+This project contains 3rd party source code (in Code/glm, Code/sdl, Code/sdlmixer, Code/stbimage) accompanied by its own licenses.
+
+Everything else is under "The Unlicense", including:
+ * code and resource files in Code/snek
+ * scripts / configuration files (build.py, .vscode/*)
+ * texture and sound assets in Data/Snek
